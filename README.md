@@ -15,5 +15,5 @@ G16 （沒有名字）
 
 - [投影片](./G16_slides.pdf)
 - [書面報告](./G16_report.pdf)  
-- [專案網站](#若沒有可以拿掉)
+- [專案網站](https://fufuisme.github.io/fuyu/)
 
