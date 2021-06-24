@@ -1,0 +1,287 @@
+---
+title: "(NONAME)"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+---
+
+
+
+```{r setup, include=FALSE}
+library(ggplot2)
+library(plotly)
+library(plyr)
+library(flexdashboard)
+
+library(dplyr)
+library(ggplot2)
+
+library(readxl)
+```
+
+父母親教育程度
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### 父親教育程度
+
+```{r}
+DadData <- as.data.frame(read_excel("C:/Users/Irene/Desktop/父親教育程度.xlsx"))
+MomData <- as.data.frame(read_excel("C:/Users/Irene/Desktop/母親教育程度.xlsx"))
+
+DadData$degree <- factor(MomData$degree,levels = c("國中及以下", "高中職","專科", "大學","碩士","博士") , ordered = T)
+MomData$degree <- factor(MomData$degree,levels = c("國中及以下", "高中職","專科", "大學","碩士","博士") ,ordered = T)
+
+#先繪製出三類數據的折線圖
+p <- ggplot(DadData) +
+    geom_line(mapping = aes(x = degree, y = law, group=1),stat = "identity", color="#EA7500", size=1) +
+    geom_line(mapping = aes(x = degree, y = students, group=1),stat = "identity", color="#66B3FF", size=1) +
+    geom_line(mapping = aes(x = degree, y = all, group=1),stat = "identity", color="#AE8F00", size=1) +
+  #標記出此圖的標題
+    labs(x = "父親教育程度", y = "percentage (%)") +
+  #點出折線圖的點
+    geom_point(mapping = aes(x = degree, y = law, group=1), color = "#D26900") +
+    geom_point(mapping = aes(x = degree, y = students, group=1), color = "#0080FF") +
+    geom_point(mapping = aes(x = degree, y = all, group=1), color = "#796400")
+ggplotly(p)
+```
+> 橘色線為台大法學院一到四年級學生數據；藍線為18至22歲大學生；土色線為18至22歲全國人民
+
+### 母親教育程度
+
+```{r}
+#先繪製出三類數據的折線圖
+q <- ggplot(MomData) +
+    geom_line(mapping = aes(x = degree, y = law, group=1),stat = "identity", color="#EA7500", size=1) +
+    geom_line(mapping = aes(x = degree, y = students, group=1),stat = "identity", color="#66B3FF", size=1) +
+    geom_line(mapping = aes(x = degree, y = all, group=1),stat = "identity", color="#AE8F00", size=1) +
+  #標記出此圖的標題
+    labs(x = "母親教育程度", y = "percentage (%)") +
+  #點出折線圖的點
+    geom_point(mapping = aes(x = degree, y = law, group=1), color = "#D26900") +
+    geom_point(mapping = aes(x = degree, y = students, group=1), color = "#0080FF") +
+    geom_point(mapping = aes(x = degree, y = all, group=1), color = "#796400")
+
+ggplotly(q)
+```
+> 母親和父親的曲線都有明顯的不同，不論是母親還是父親，橘色線(台大學生)和其他皆有明顯的差別。台大學生的父親42.42%是大學以上學歷，母親則有26.69%。
+
+收入排名
+=====================================     
+   
+Row 
+-------------------------------------
+```{r}
+# 匯入數據資料
+dataset <- read_excel("C:/Users/Irene/Desktop/畫圖.xlsx")
+
+# 繪圖
+# 以X軸為觀察年度、y軸為台大學生占比，使用geom_bar繪製長條圖
+# 並依據家庭所得在台之排名(百分比)呈現不同顏色
+# 運用scale_fill_manual使用色碼表之顏色代碼自行搭配圖表色彩
+f <- ggplot(data = dataset) +
+        geom_bar(mapping = aes(x = year, y = ntu, fill = income), stat = "identity")+
+        scale_fill_manual(values=c("#D2E9FF", "#ECF5FF", "#FFF4C1", "#FFE66F", "#FFD306"))
+
+# 呈現
+ggplotly(f)
+```
+> 縱軸為台大生占比、橫軸為觀察年度。圖中之色塊呈現家庭所得在台之排名(以百分比計算)，可見約有四成台大學生之家庭所得在全台前5%，而有超過八成之台大學生之家庭所得在全台前25%以內，因此可推知，所得在前25%以外的全台學生家庭只能搶剩下不到19%的台大入學名額。
+
+###
+
+```{r}
+```
+
+
+家庭所得
+=====================================     
+   
+Row 
+-------------------------------------
+```{r}
+#匯入數據資料
+mydata <- readr::read_csv("C:/Users/Irene/Desktop/台大全國平均所得比較.csv")
+#繪圖
+#以X軸為觀察年度，Y軸為年所得金額，使用geom_line繪製折線圖並搭配geom_point標記觀察年度的數值點
+#運用color與scale_color_manual將台大學生家庭與全國家庭的平均年所得用色碼錶之顏色代碼區分
+#使用labs為X軸與Y軸命名
+aai <- ggplot(data = mydata) +
+  geom_line(aes(x = Years, y = ntu, group = 1, color = "NTU")) +
+  geom_point(aes(x = Years, y = ntu, color = "NTU")) +
+  geom_line(aes(x = Years, y = all, group = 1, color = "Taiwan")) +
+  geom_point(aes(x = Years, y = all, color = "Taiwan")) +
+  scale_color_manual(values = c("#9393FF", "#AAAAFF"), name = "section") +
+  labs(x = "Years Group", y = "Average Annual Income")
+ggplotly(aai)
+```
+
+> 深紫色線為台大學生家庭平均年所得，而淡紫色線為全國家庭平均年所得，比較2001年至2014年各年間台大學生家庭年所得一直都高於全國家庭平均年所得，且比值約為1.15。
+
+
+各縣市差異一
+=====================================     
+   
+Row
+-------------------------------------
+
+### 2001 ~ 2003
+
+    
+```{r}
+#首先由tibble套件設定一個由城市、機率和地區組成的dataframe作為geom_bar的繪圖資料。
+df<-tibble(
+  section=c(
+          "台北市","新北市","高雄市","台中市","桃園市","台南市","彰化縣"
+          ,"基隆市","雲林縣","新竹市","宜蘭縣","南投縣","嘉義市","屏東縣"
+          ,"苗栗縣","新竹縣","花蓮縣","嘉義縣","台東縣","金門縣","澎湖縣"
+          ,"連江縣"),
+  percentage=c(3.41,1.15,1.4,1.85,
+             0.62,1.46,0.41,1.01,
+             0.35,0.67,0.52,0.41,
+             0.83,0.25,0.22,0.22,
+             0.25, 0.15,0.16,0.44,
+             0.12,0.1),
+  number=c("北","北","南","中","北",
+         "南","中","北","南","北",
+         "東","中","南","南","北",
+         "北","東","南","東","離島",
+         "離島","離島")
+)
+#接下來設立level函數用以將此資料照我們想要的北中南東離島依序排列。
+df$section = with(df,factor(section, levels=c( "台北市","新北市","基隆市" ,"桃園市"
+                                                     ,"新竹市" ,"新竹縣","苗栗縣","台中市"
+                                                     ,"彰化縣","南投縣" ,"雲林縣" ,"嘉義市"
+                                                     ,"嘉義縣","台南市","高雄市","屏東縣"
+                                                     ,"宜蘭縣","花蓮縣","台東縣","澎湖縣"
+                                                     ,"金門縣","連江縣")))
+#接著使用ggplot2的geom_bar套件，讀取此data並將x軸設為城市、y軸設為機率。為了讓圖片更直觀我們再利用labs(title=)加上標題、theme(axis.text.x=element_text(size=6))設定文字大小與間距，scale_fall_manual(name=,values=c())來將不同區域的城市進行顏色分類。此圖利用以上函數繪畫出一以城市為橫軸、機率為縱軸的長條圖，並將北中南東離島五區以不同顏色分類。
+picture<-ggplot(data = df)+
+  geom_bar(mapping=aes(x=section,y=percentage,fill=number),
+           stat="identity")+
+  labs(title='2001-2003')+
+  theme(axis.text.x=element_text(size=4.6))+
+  scale_fill_manual(name="地區",values=c("#005AB5", "#000079",  "#46A3FF", "#0080FF", "#ACD6FF"))
+ggplotly(picture)
+```
+> 視覺化將北中南東與離島四區以不同深淺分隔，比較2001至2014年間各縣市學生成為台大生的機率。其中以台北市最高，接著各區的直轄市皆有較高的比例
+
+### 2004 ~ 2006
+    
+```{r}
+#以下程式碼操作皆如2001-2003之註解
+df_04_06<-data.frame(section=c("台北市","新北市","高雄市","台中市","桃園市","台南市","彰化縣"
+          ,"基隆市","雲林縣","新竹市","宜蘭縣","南投縣","嘉義市","屏東縣"
+          ,"苗栗縣","新竹縣","花蓮縣","嘉義縣","台東縣","金門縣","澎湖縣"
+          ,"連江縣"),
+percentage=c(3.71,1.27,1.62,2.3,0.77,1.61,
+             0.51,0.97,0.31,1.01,0.67,0.51,
+             0.97,0.32,0.2,0.28,0.33,0.23,
+             0.23,0.07,0.28,0.28)
+,
+number=c("北","北","南","中","北",
+         "南","中","北","南","北",
+         "東","中","南","南","北",
+         "北","東","南","東","離島",
+         "離島","離島"))
+
+df_04_06$section = with(df, factor(section, levels=c(c("台北市","新北市","基隆市" ,"桃園市"
+                                                     ,"新竹市" ,"新竹縣","苗栗縣","台中市"
+                                                     ,"彰化縣","南投縣" ,"雲林縣" ,"嘉義市"
+                                                     ,"嘉義縣","台南市","高雄市","屏東縣"
+                                                     ,"宜蘭縣","花蓮縣","台東縣","澎湖縣"
+                                                     ,"金門縣","連江縣"))))
+
+picture_04_06<-ggplot(data = df_04_06)+
+  geom_bar(mapping=aes(x=section,y=percentage,fill=number),
+           stat = "identity")+
+  labs(title='2004-2006')+
+  theme(axis.text.x=element_text(size=4.6))+
+  scale_fill_manual(name="地區",values=c("#005AB5", "#000079",  "#46A3FF", "#0080FF", "#ACD6FF"))
+
+ggplotly(picture_04_06)
+
+``` 
+
+各縣市差異二
+===================================== 
+
+Row
+-------------------------------------
+    
+### 2007 ~ 2010
+    
+```{r}
+#以下程式碼操作皆如2001-2003之註解
+df_07_10<-data.frame(section=c("台北市","新北市","高雄市","台中市","桃園市","台南市","彰化縣"
+          ,"基隆市","雲林縣","新竹市","宜蘭縣","南投縣","嘉義市","屏東縣"
+          ,"苗栗縣","新竹縣","花蓮縣","嘉義縣","台東縣","金門縣","澎湖縣"
+          ,"連江縣"),
+percentage=c(3.68,1.37,1.67,2.19,
+             0.77,1.7,0.52,1.14,
+             0.36,1.2,0.77,0.52,
+             1.24,0.28,0.33,0.48,
+             0.33,0.36,0.22,0,
+             0.16, 0.59),
+             
+number=c("北","北","南","中","北",
+         "南","中","北","南","北",
+         "東","中","南","南","北",
+         "北","東","南","東","離島",
+         "離島","離島"))
+
+df_07_10$section = with(df, factor(section, levels=c(c("台北市","新北市","基隆市" ,"桃園市"
+                                                     ,"新竹市" ,"新竹縣","苗栗縣","台中市"
+                                                     ,"彰化縣","南投縣" ,"雲林縣" ,"嘉義市"
+                                                     ,"嘉義縣","台南市","高雄市","屏東縣"
+                                                     ,"宜蘭縣","花蓮縣","台東縣","澎湖縣"
+                                                     ,"金門縣","連江縣"))))
+
+picture_07_10<-ggplot(data = df_07_10)+
+  geom_bar(mapping=aes(x=section,y=percentage,fill=number),
+           stat = "identity")+
+  
+  labs(title='2007-2010')+
+  theme(axis.text.x=element_text(size=4.6))+
+  scale_fill_manual(name="地區",values=c("#005AB5", "#000079",  "#46A3FF", "#0080FF", "#ACD6FF"))
+
+ggplotly(picture_07_10)
+```
+    
+### 2011 ~ 2014
+
+```{r}
+#以下程式碼操作皆如2001-2003之註解
+df_11_14<-data.frame(section=c("台北市","新北市","高雄市","台中市","桃園市","台南市","彰化縣"
+          ,"基隆市","雲林縣","新竹市","宜蘭縣","南投縣","嘉義市","屏東縣"
+          ,"苗栗縣","新竹縣","花蓮縣","嘉義縣","台東縣","金門縣","澎湖縣"
+          ,"連江縣"),
+percentage=c(3.39,1.25,1.42,2.11,0.92,1.72,
+             0.57,1.03,0.43,1.25,0.64,0.6,
+             1.11,0.35,0.33,0.63,0.46,0.4,
+             0.26,0.27,0.15,0.35),
+number=c("北","北","南","中","北",
+         "南","中","北","南","北",
+         "東","中","南","南","北",
+         "北","東","南","東","離島",
+         "離島","離島"))
+df_11_14$section = with(df, factor(section, levels=c(c("台北市","新北市","基隆市" ,"桃園市"
+                                                     ,"新竹市" ,"新竹縣","苗栗縣","台中市"
+                                                     ,"彰化縣","南投縣" ,"雲林縣" ,"嘉義市"
+                                                     ,"嘉義縣","台南市","高雄市","屏東縣"
+                                                     ,"宜蘭縣","花蓮縣","台東縣","澎湖縣"
+                                                     ,"金門縣","連江縣"))))
+
+                       
+picture_11_14<-ggplot(data = df_11_14)+
+  geom_bar(mapping=aes(x=section,y=percentage,fill=number),stat = "identity")+
+  labs(title='2011-2014')+
+  theme(axis.text.x=element_text(size=4.6))+
+  scale_fill_manual(name="地區",values=c("#005AB5", "#000079",  "#46A3FF", "#0080FF", "#ACD6FF"))
+
+ggplotly(picture_11_14)
+
+```
